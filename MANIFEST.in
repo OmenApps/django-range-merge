@@ -1,0 +1,5 @@
+include CHANGELOG.md
+include LICENSE.txt
+include README.md
+include requirements-dev.txt
+recursive-include django_range_merge *.html *.png *.gif *.js *.css *.jpg *.jpeg *.svg
