@@ -5,6 +5,7 @@ import os
 import re
 import sys
 
+from pathlib import Path
 from setuptools import find_packages, setup
 
 
@@ -97,14 +98,15 @@ if sys.argv[-1] == "tag":
     os.system("git push --tags")
     sys.exit()
 
-README = open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf8").read()
-CHANGELOG = open(os.path.join(os.path.dirname(__file__), "CHANGELOG.md"), encoding="utf8").read()
+this_directory = Path(__file__).parent
+README = (this_directory / "README.md").read_text()
 
 setup(
     name="django-range-merge",
     version=VERSION,
     description="""Enables the range_merge Aggregate for Django on Postgres""",
-    long_description=README + "\n\n" + CHANGELOG,
+    long_description=README,
+    long_description_content_type='text/markdown',
     author="Jack Linke",
     author_email="jack@watervize.com",
     url="https://github.com/jacklinke/django-range-merge",
@@ -113,7 +115,6 @@ setup(
         exclude=["*tests"],
     ),
     include_package_data=True,
-    # install_requires=load_requirements('requirements-dev.txt'),
     python_requires=">=3.8",
     zip_safe=False,
     keywords="Postgres django range fields aggregate",
