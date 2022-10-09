@@ -10,4 +10,4 @@ class DjangoRangeMergeConfig(AppConfig):
     Configuration for the django_range_merge Django application.
     """
 
-    name = 'django_range_merge'
+    name = "django_range_merge"

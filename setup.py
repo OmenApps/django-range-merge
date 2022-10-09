@@ -18,11 +18,10 @@ def get_version(*file_paths):
     """
     filename = os.path.join(os.path.dirname(__file__), *file_paths)
     version_file = open(filename, encoding="utf8").read()
-    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]",
-                              version_file, re.M)
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file, re.M)
     if version_match:
         return version_match.group(1)
-    raise RuntimeError('Unable to find version string.')
+    raise RuntimeError("Unable to find version string.")
 
 
 def load_requirements(*requirements_paths):
@@ -48,10 +47,12 @@ def load_requirements(*requirements_paths):
             # fine to add constraints to an unconstrained package,
             # raise an error if there are already constraints in place
             if existing_version_constraints and existing_version_constraints != version_constraints:
-                raise BaseException(f'Multiple constraint definitions found for {package}:'
-                                    f' "{existing_version_constraints}" and "{version_constraints}".'
-                                    f'Combine constraints into one location with {package}'
-                                    f'{existing_version_constraints},{version_constraints}.')
+                raise BaseException(
+                    f"Multiple constraint definitions found for {package}:"
+                    f' "{existing_version_constraints}" and "{version_constraints}".'
+                    f"Combine constraints into one location with {package}"
+                    f"{existing_version_constraints},{version_constraints}."
+                )
             if add_if_not_present or package in current_requirements:
                 current_requirements[package] = version_constraints
 
@@ -62,8 +63,8 @@ def load_requirements(*requirements_paths):
             for line in reqs:
                 if is_requirement(line):
                     add_version_constraint_or_raise(line, requirements, True)
-                if line and line.startswith('-c') and not line.startswith('-c http'):
-                    constraint_files.add(os.path.dirname(path) + '/' + line.split('#')[0].replace('-c', '').strip())
+                if line and line.startswith("-c") and not line.startswith("-c http"):
+                    constraint_files.add(os.path.dirname(path) + "/" + line.split("#")[0].replace("-c", "").strip())
 
     # process constraint files: add constraints to existing requirements
     for constraint_file in constraint_files:
@@ -88,47 +89,46 @@ def is_requirement(line):
     return line and line.strip() and not line.startswith(("-r", "#", "-e", "git+", "-c"))
 
 
-VERSION = get_version('django_range_merge', '__init__.py')
+VERSION = get_version("django_range_merge", "__init__.py")
 
-if sys.argv[-1] == 'tag':
+if sys.argv[-1] == "tag":
     print("Tagging the version on github:")
     os.system("git tag -a %s -m 'version %s'" % (VERSION, VERSION))
     os.system("git push --tags")
     sys.exit()
 
-README = open(os.path.join(os.path.dirname(__file__), 'README.md'), encoding="utf8").read()
-CHANGELOG = open(os.path.join(os.path.dirname(__file__), 'CHANGELOG.md'), encoding="utf8").read()
+README = open(os.path.join(os.path.dirname(__file__), "README.md"), encoding="utf8").read()
+CHANGELOG = open(os.path.join(os.path.dirname(__file__), "CHANGELOG.md"), encoding="utf8").read()
 
 setup(
-    name='django-range-merge',
+    name="django-range-merge",
     version=VERSION,
     description="""Enables the range_merge Aggregate for Django on Postgres""",
-    long_description=README + '\n\n' + CHANGELOG,
-    author='Jack Linke',
-    author_email='jack@watervize.com',
-    url='https://github.com/jacklinke/django-range-merge',
+    long_description=README + "\n\n" + CHANGELOG,
+    author="Jack Linke",
+    author_email="jack@watervize.com",
+    url="https://github.com/jacklinke/django-range-merge",
     packages=find_packages(
-        include=['django_range_merge', 'django_range_merge.*'],
+        include=["django_range_merge", "django_range_merge.*"],
         exclude=["*tests"],
     ),
-
     include_package_data=True,
     # install_requires=load_requirements('requirements-dev.txt'),
     python_requires=">=3.8",
     zip_safe=False,
-    keywords='Postgres django range fields aggregate',
+    keywords="Postgres django range fields aggregate",
     classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Framework :: Django',
-        'Framework :: Django :: 3.2',
-        'Framework :: Django :: 4.0',
-        'Framework :: Django :: 4.1',
-        'Intended Audience :: Developers',
-        'License :: Other/Proprietary License',
-        'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
+        "Development Status :: 3 - Alpha",
+        "Framework :: Django",
+        "Framework :: Django :: 3.2",
+        "Framework :: Django :: 4.0",
+        "Framework :: Django :: 4.1",
+        "Intended Audience :: Developers",
+        "License :: Other/Proprietary License",
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
     ],
 )
