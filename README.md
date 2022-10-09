@@ -1,6 +1,8 @@
 # django-range-merge
 
-Enables the `range_merge` Aggregate for Django on Postgres. It should only be used with Django projects using the Postgres database. See [Postgres docs on Range Functions](https://www.postgresql.org/docs/14/functions-range.html#RANGE-FUNCTIONS-TABLE).
+Enables the `range_merge` Aggregate for Django on Postgres. `range_merge` "Computes the smallest range that includes ... the given ranges".
+
+This package should only be used with Django projects using the Postgres database. See [Postgres docs on Range Functions](https://www.postgresql.org/docs/14/functions-range.html#RANGE-FUNCTIONS-TABLE).
 
 Note: This app is still a work-in-progress, but currently works. Tests have not yet been implemented.
 
@@ -74,12 +76,22 @@ from django.template.response import TemplateResponse
 from .date_utils import get_month_range
 
 def range_of_visitors_this_month(request):
+    """
+    e.g., given the following instance: 
+        {"id" : 1, "name" : "Birthday",     "potential_visitors" : "[2, 3)", ...}
+        {"id" : 2, "name" : "Bake Sale",    "potential_visitors" : "[30, 50)", ...}
+        {"id" : 3, "name" : "Band Camp",    "potential_visitors" : "[22, 28)", ...}
+        {"id" : 4, "name" : "Cooking Show", "potential_visitors" : "[7, 20)", ...}
+        {"id" : 5, "name" : "Pajama Day",   "potential_visitors" : "[15, 30)", ...}
+    
+    The result would be:
+        {'output': NumericRange(2, 50, '[)')}
+    """
     template = "base.html"
     
     context = Event.objects.filter(period__overlaps=get_month_range()).aggregate(
         output=Aggregate(F("potential_visitors"), function="range_merge")
     )
-    # example result: {'output': NumericRange(3, 20, '[)')}
 
     return TemplateResponse(request, template, context)
 
@@ -89,7 +101,7 @@ def overall_dates_of_funded_events(request):
     context = Event.objects.filter(is_funded=True).aggregate(
         output=Aggregate(F("period"), function="range_merge")
     )
-    # example result: {'output': DateTimeRange("2022-10-01", "2022-12-07", '[)')}
+    # Example result: {'output': DateTimeRange("2022-10-01", "2022-12-07", '[)')}
 
     return TemplateResponse(request, template, context)
 
