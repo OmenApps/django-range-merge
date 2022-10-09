@@ -14,6 +14,7 @@ def root(*args):
     """
     return join(abspath(dirname(__file__)), *args)
 
+USE_TZ = True
 
 DATABASES = {
     'default': {

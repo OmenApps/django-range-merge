@@ -63,13 +63,6 @@ if __name__ == "__main__":
         run_tests = False
 
     try:
-        sys.argv.remove('--benchmarks')
-    except ValueError:
-        run_benchmarks = False
-    else:
-        run_benchmarks = True
-
-    try:
         sys.argv.remove('--fast')
     except ValueError:
         style = 'default'
