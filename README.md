@@ -1,8 +1,8 @@
 # django-range-merge
 
-Enables the range_merge Aggregate for Django on Postgres. It should only be used with Django projects using the Postgres database.
+Enables the `range_merge` Aggregate for Django on Postgres. It should only be used with Django projects using the Postgres database. See [Postgres docs on Range Functions](https://www.postgresql.org/docs/14/functions-range.html#RANGE-FUNCTIONS-TABLE).
 
-Note: This app is still a work-in-progress, but *should* be functional. Tests have not yet been implemented.
+Note: This app is still a work-in-progress, but currently works. Tests have not yet been implemented.
 
 
 ## Installing
@@ -79,7 +79,7 @@ def range_of_visitors_this_month(request):
     context = Event.objects.filter(period__overlaps=get_month_range()).aggregate(
         output=Aggregate(F("potential_visitors"), function="range_merge")
     )
-    # {'output': NumericRange(3, 20, '[)')}
+    # example result: {'output': NumericRange(3, 20, '[)')}
 
     return TemplateResponse(request, template, context)
 
@@ -89,7 +89,7 @@ def overall_dates_of_funded_events(request):
     context = Event.objects.filter(is_funded=True).aggregate(
         output=Aggregate(F("period"), function="range_merge")
     )
-    # {'output': DateTimeRange("2022-10-01", "2022-12-07", '[)')}
+    # example result: {'output': DateTimeRange("2022-10-01", "2022-12-07", '[)')}
 
     return TemplateResponse(request, template, context)
 
