@@ -59,7 +59,7 @@ date_utils.py (get a range covering the entire current month)
 ```python
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
-from psycopg2.extras import DateTimeRange
+from psycopg2.extras import DateTimeTZRange
 
 def get_month_range():
     """Return a DateTimeRange range covering this entire month"""
@@ -68,7 +68,7 @@ def get_month_range():
         today += timezone.timedelta(7)
     this_month_start = today.replace(day=1)
     next_month_start = this_month_start + relativedelta(months=1)
-    return DateTimeRange(this_month_start, next_month_start)
+    return DateTimeTZRange(this_month_start, next_month_start)
 ```
 
 views.py
@@ -104,7 +104,7 @@ def overall_dates_of_funded_events(request):
     context = Event.objects.filter(is_funded=True).aggregate(
         output=Aggregate(F("period"), function="range_merge")
     )
-    # Example result: {'output': DateTimeRange("2022-10-01", "2022-12-07", '[)')}
+    # Example result: {'output': DateTimeRange("2022-10-01 02:00:00", "2022-12-07 12:00:00", '[)')}
 
     return TemplateResponse(request, template, context)
 
