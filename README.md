@@ -54,7 +54,7 @@ class Event(models.Model):
 
 ```
 
-date_utils.py
+date_utils.py (get a range covering the entire current month)
 
 ```python
 from django.utils import timezone
@@ -62,6 +62,7 @@ from dateutil.relativedelta import relativedelta
 from psycopg2.extras import DateTimeRange
 
 def get_month_range():
+    """Return a DateTimeRange range covering this entire month"""
     today = timezone.now().date()
     if today.day > 25:
         today += timezone.timedelta(7)
@@ -79,7 +80,7 @@ from .date_utils import get_month_range
 
 def range_of_visitors_this_month(request):
     """
-    e.g., given the following instance: 
+    e.g., given the following instances: 
         {"id" : 1, "name" : "Birthday",     "potential_visitors" : "[2, 3)", ...}
         {"id" : 2, "name" : "Bake Sale",    "potential_visitors" : "[30, 50)", ...}
         {"id" : 3, "name" : "Band Camp",    "potential_visitors" : "[22, 28)", ...}
