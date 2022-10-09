@@ -2,7 +2,7 @@
 
 Enables the `range_merge` Aggregate for Django on Postgres. `range_merge` "Computes the smallest range that includes ... the given ranges".
 
-![Visualization of what range_merge does, returning smallest range that includes input ranges in the QuerySet](https://github.com/jacklinke/django-range-merge/media/range_merge.png)
+![Visualization of what range_merge does, returning smallest range that includes input ranges in the QuerySet](https://raw.githubusercontent.com/jacklinke/django-range-merge/main/media/range_merge.png)
 
 This package should only be used with Django projects using the Postgres database. See [Postgres docs on Range Functions](https://www.postgresql.org/docs/14/functions-range.html#RANGE-FUNCTIONS-TABLE).
 
