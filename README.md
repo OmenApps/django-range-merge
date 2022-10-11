@@ -74,6 +74,7 @@ def get_month_range():
 views.py
 
 ```python
+from django.db.models import F, Aggregate
 from django.template.response import TemplateResponse
 
 from .date_utils import get_month_range
@@ -92,7 +93,7 @@ def range_of_visitors_this_month(request):
     """
     template = "base.html"
     
-    context = Event.objects.filter(period__overlaps=get_month_range()).aggregate(
+    context = Event.objects.filter(period__overlap=get_month_range()).aggregate(
         output=Aggregate(F("potential_visitors"), function="range_merge")
     )
 
