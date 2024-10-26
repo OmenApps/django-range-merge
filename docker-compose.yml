@@ -1,0 +1,29 @@
+services:
+  django_test:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    image: django_range_merge
+    container_name: django_test
+
+    env_file:
+      - ./compose/django/.django
+    ports:
+      - "8111:8111"
+    command: /start
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/postgres/Dockerfile
+    image: django_range_merge_postgres
+    container_name: django_range_merge_postgres
+    environment:
+      - ENGINE=django.db.backends.postgresql
+      - POSTGRES_PASSWORD=postgres
+      - NAME=postgres
+      - USER=postgres
+      - PASSWORD=postgres
+      - HOST=postgres
+    ports:
+      - "5436:5432"

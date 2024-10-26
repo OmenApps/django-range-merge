@@ -1,15 +1,21 @@
 # django-range-merge
 
-Enables the `range_merge` Aggregate for Django on Postgres. `range_merge` "Computes the smallest range that includes ... the given ranges".
+A Django package that enables the PostgreSQL `range_merge` aggregate function for use with Django’s ORM.
 
-![Visualization of what range_merge does, returning smallest range that includes input ranges in the QuerySet](https://raw.githubusercontent.com/jacklinke/django-range-merge/main/media/range_merge.png)
+`django-range-merge` provides access to PostgreSQL's `range_merge` aggregate function, which computes the smallest range that includes all input ranges. This is particularly useful when working with Django's range fields like `DateTimeRangeField`, `DateRangeField`, or `IntegerRangeField`.
+
+![Visualization of what range_merge does, returning smallest range that includes input ranges in the QuerySet](https://raw.githubusercontent.com/omenapps/django-range-merge/main/media/range_merge.png)
 
 This package should only be used with Django projects using the Postgres database. See [Postgres docs on Range Functions](https://www.postgresql.org/docs/14/functions-range.html#RANGE-FUNCTIONS-TABLE).
 
 Note: This app is still a work-in-progress, but currently works. Tests have not yet been implemented.
 
 
-## Installing
+## Installation
+
+```bash
+pip install django-range-merge
+```
 
 Add to `INSTALLED_APPS`:
 
@@ -25,7 +31,7 @@ Migrate to apply the aggregation to your database:
 
 ```bash
 > python manage.py migrate
-````
+```
 
 ## Getting Started
 
@@ -40,9 +46,9 @@ models.py
 
 ```python
 class Event(models.Model):
-    name = models.CharField(max_length=30)
-    period = models.DateTimeRangeField(help_text="The period of time this event covers")
-    potential_visitors = models.IntegerRangeField(help_text="The range of visitors expected at this event")
+    name = models.TextField()
+    period = models.DateTimeRangeField()
+    potential_visitors = models.IntegerRangeField()
     is_funded = BooleanField(default=False)
 
     class Meta:
@@ -81,18 +87,18 @@ from .date_utils import get_month_range
 
 def range_of_visitors_this_month(request):
     """
-    e.g., given the following instances: 
+    e.g., given the following instances:
         {"id" : 1, "name" : "Birthday",     "potential_visitors" : "[2, 3)", ...}
         {"id" : 2, "name" : "Bake Sale",    "potential_visitors" : "[30, 50)", ...}
         {"id" : 3, "name" : "Band Camp",    "potential_visitors" : "[22, 28)", ...}
         {"id" : 4, "name" : "Cooking Show", "potential_visitors" : "[7, 20)", ...}
         {"id" : 5, "name" : "Pajama Day",   "potential_visitors" : "[15, 30)", ...}
-    
+
     The result would be:
         {'output': NumericRange(2, 50, '[)')}
     """
     template = "base.html"
-    
+
     context = Event.objects.filter(period__overlap=get_month_range()).aggregate(
         output=Aggregate(F("potential_visitors"), function="range_merge")
     )
@@ -101,7 +107,7 @@ def range_of_visitors_this_month(request):
 
 def overall_dates_of_funded_events(request):
     template = "base.html"
-    
+
     context = Event.objects.filter(is_funded=True).aggregate(
         output=Aggregate(F("period"), function="range_merge")
     )
@@ -121,6 +127,72 @@ base.html
     </body>
 </html>
 ```
+
+## Performance Considerations
+
+- The `range_merge` aggregate operates efficiently on server side
+- Indexes on range fields can improve query performance
+- Consider using `values()` to limit data transfer when only ranges are needed
+
+
+## Development and Testing Setup
+
+This project uses Docker Compose for development and testing. Follow these steps to get started:
+
+
+### Prerequisites
+
+1. Make sure you have Docker and Docker Compose installed
+2. Install `uv` tool: `pip install uv`
+
+
+### Setting Up the Development Environment
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/OmenApps/django-range-merge.git
+   cd django-range-merge
+   ```
+
+2. Create a virtual environment and install dependencies:
+   ```bash
+   uv venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   uv sync --prerelease=allow --extra=dev
+   ```
+
+3. Build and start the Docker containers:
+   ```bash
+   docker-compose up -d --build postgres
+   ```
+
+4. Run migrations:
+   ```bash
+    python manage.py migrate
+    ```
+
+### Running Tests
+
+Using `nox`:
+
+   ```bash
+   nox -s tests
+   ```
+   This will run tests across multiple Django versions.
+
+
+### Development Database Setup
+
+The project uses PostgreSQL for testing. The Docker Compose setup includes a PostgreSQL instance with the following configuration:
+
+- Host: localhost
+- Port: 5436  # To avoid conflicts with local PostgreSQL installations
+- Database: postgres
+- Username: postgres
+- Password: postgres
+
+The database is automatically configured when running tests through Docker Compose.
+
 
 ## License
 
